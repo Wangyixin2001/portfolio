@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>王一新 | 供应链优化 & 运筹决策</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ========== TOKENS ========== */
+:root {
+  --navy-950: #0a1628;
+  --navy-900: #0f2042;
+  --navy-800: #162d5a;
+  --navy-700: #1e3a6e;
+  --navy-600: #2a4d8a;
+  --navy-500: #3565a8;
+  --navy-400: #5283c4;
+  --navy-300: #7ea3d6;
+  --navy-200: #b3c8e8;
+  --navy-100: #dce6f4;
+  --navy-50: #f0f4fa;
+
+  --accent-gold: #c8a45c;
+  --accent-gold-light: #e2ca8a;
+  --accent-gold-dim: #a08040;
+
+  --text-primary: #1a1f2e;
+  --text-secondary: #4a5068;
+  --text-muted: #7a8098;
+  --text-on-dark: #e8ecf4;
+  --text-on-dark-muted: #98a4c0;
+
+  --bg-page: #f8f9fc;
+  --bg-card: #ffffff;
+  --bg-card-alt: #f4f6fa;
+  --border-light: #e2e6f0;
+  --border-subtle: #eceef4;
+
+  --font-serif: 'Noto Serif SC', 'Songti SC', serif;
+  --font-sans: 'Noto Sans SC', 'PingFang SC', -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Menlo', monospace;
+
+  --shadow-sm: 0 1px 3px rgba(10,22,40,0.06);
+  --shadow-md: 0 4px 16px rgba(10,22,40,0.08);
+  --shadow-lg: 0 8px 32px rgba(10,22,40,0.12);
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+}
+
+/* ========== RESET ========== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  background: var(--bg-page);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+/* ========== NAV ========== */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(10,22,40,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  transition: background 0.3s;
+}
+.nav-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2rem; height: 56px;
+}
+.nav-logo {
+  font-family: var(--font-serif);
+  font-size: 1.1rem; font-weight: 700;
+  color: var(--text-on-dark);
+  letter-spacing: 0.04em;
+}
+.nav-logo span { color: var(--accent-gold); }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a {
+  font-size: 0.82rem; font-weight: 500;
+  color: var(--text-on-dark-muted);
+  letter-spacing: 0.04em;
+  transition: color 0.2s;
+  position: relative;
+}
+.nav-links a:hover { color: var(--text-on-dark); }
+.nav-links a::after {
+  content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+  height: 2px; background: var(--accent-gold);
+  transform: scaleX(0); transition: transform 0.25s;
+}
+.nav-links a:hover::after { transform: scaleX(1); }
+
+/* ========== HERO ========== */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex; align-items: center;
+  background: linear-gradient(160deg, var(--navy-950) 0%, var(--navy-800) 50%, var(--navy-700) 100%);
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 40%, rgba(200,164,92,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 80% at 20% 80%, rgba(42,77,138,0.3) 0%, transparent 50%);
+}
+/* Grid pattern */
+.hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+.hero-content {
+  position: relative; z-index: 2;
+  max-width: 1200px; margin: 0 auto; padding: 0 2rem;
+  width: 100%;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.4rem 1rem;
+  background: rgba(200,164,92,0.12);
+  border: 1px solid rgba(200,164,92,0.25);
+  border-radius: 100px;
+  font-size: 0.78rem; font-weight: 500;
+  color: var(--accent-gold-light);
+  letter-spacing: 0.06em;
+  margin-bottom: 2rem;
+}
+.hero-badge::before {
+  content: ''; width: 6px; height: 6px;
+  background: var(--accent-gold); border-radius: 50%;
+}
+.hero h1 {
+  font-family: var(--font-serif);
+  font-size: clamp(2.8rem, 6vw, 4.5rem);
+  font-weight: 900;
+  color: var(--text-on-dark);
+  line-height: 1.15;
+  margin-bottom: 1.5rem;
+}
+.hero h1 .highlight {
+  background: linear-gradient(135deg, var(--accent-gold-light), var(--accent-gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--text-on-dark-muted);
+  max-width: 640px;
+  line-height: 1.8;
+  margin-bottom: 2.5rem;
+  font-weight: 300;
+}
+.hero-stats {
+  display: flex; gap: 3rem; flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+.hero-stat {
+  display: flex; flex-direction: column;
+}
+.hero-stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.8rem; font-weight: 500;
+  color: var(--accent-gold-light);
+  line-height: 1;
+}
+.hero-stat-label {
+  font-size: 0.75rem;
+  color: var(--text-on-dark-muted);
+  margin-top: 0.4rem;
+  letter-spacing: 0.04em;
+}
+.hero-actions {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+}
+.btn {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  padding: 0.75rem 1.8rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem; font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: all 0.25s;
+  cursor: pointer; border: none;
+}
+.btn-primary {
+  background: var(--accent-gold);
+  color: var(--navy-950);
+}
+.btn-primary:hover {
+  background: var(--accent-gold-light);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(200,164,92,0.3);
+}
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  color: var(--text-on-dark);
+}
+.btn-outline:hover {
+  border-color: rgba(255,255,255,0.4);
+  background: rgba(255,255,255,0.05);
+}
+
+/* Scroll indicator */
+.scroll-hint {
+  position: absolute; bottom: 2.5rem; left: 50%;
+  transform: translateX(-50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  z-index: 2;
+}
+.scroll-hint span {
+  font-size: 0.7rem; color: var(--text-on-dark-muted);
+  letter-spacing: 0.12em; text-transform: uppercase;
+}
+.scroll-line {
+  width: 1px; height: 40px;
+  background: linear-gradient(to bottom, var(--accent-gold), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
+  50% { opacity: 1; transform: scaleY(1); }
+}
+
+/* ========== SECTIONS ========== */
+.section {
+  padding: 6rem 2rem;
+}
+.section-inner {
+  max-width: 1200px; margin: 0 auto;
+}
+.section-header {
+  margin-bottom: 3.5rem;
+}
+.section-label {
+  display: inline-flex; align-items: center; gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem; font-weight: 500;
+  color: var(--accent-gold-dim);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+.section-label::before {
+  content: ''; width: 24px; height: 1.5px;
+  background: var(--accent-gold);
+}
+.section-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+/* ========== ABOUT (two-column) ========== */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: start;
+}
+.about-left {
+  display: flex; flex-direction: column; gap: 2rem;
+}
+.about-avatar-wrap {
+  position: relative;
+  width: 220px;
+}
+.about-avatar {
+  width: 220px; height: 300px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  border: 3px solid var(--bg-card);
+}
+.about-avatar-accent {
+  position: absolute;
+  top: -8px; left: -8px;
+  width: 60px; height: 60px;
+  border-top: 3px solid var(--accent-gold);
+  border-left: 3px solid var(--accent-gold);
+  border-radius: var(--radius-md) 0 0 0;
+}
+.about-avatar-accent-br {
+  position: absolute;
+  bottom: -8px; right: -8px;
+  width: 60px; height: 60px;
+  border-bottom: 3px solid var(--accent-gold);
+  border-right: 3px solid var(--accent-gold);
+  border-radius: 0 0 var(--radius-md) 0;
+}
+.about-text p {
+  color: var(--text-secondary);
+  margin-bottom: 1.2rem;
+  font-size: 0.95rem;
+}
+.about-text p:first-child::first-letter {
+  font-family: var(--font-serif);
+  font-size: 3.2rem; font-weight: 700;
+  float: left;
+  line-height: 1;
+  margin-right: 0.5rem;
+  margin-top: 0.15rem;
+  color: var(--navy-700);
+}
+.info-cards {
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.info-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.2rem 1.4rem;
+  display: flex; align-items: center; gap: 1rem;
+  transition: all 0.25s;
+}
+.info-card:hover {
+  border-color: var(--navy-200);
+  box-shadow: var(--shadow-sm);
+  transform: translateX(4px);
+}
+.info-card-icon {
+  width: 40px; height: 40px;
+  background: var(--navy-50);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.info-card-content {
+  flex: 1;
+}
+.info-card-label {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.info-card-value {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-top: 0.15rem;
+}
+
+/* ========== EDUCATION ========== */
+.edu-section { background: var(--bg-card-alt); }
+.edu-timeline {
+  display: flex; flex-direction: column; gap: 0;
+  position: relative;
+}
+.edu-timeline::before {
+  content: '';
+  position: absolute; left: 23px; top: 24px; bottom: 24px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--navy-300), var(--navy-100));
+}
+.edu-item {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 1.5rem;
+  padding: 1.5rem 0;
+  position: relative;
+}
+.edu-dot {
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 2;
+}
+.edu-dot-inner {
+  width: 12px; height: 12px;
+  background: var(--navy-600);
+  border: 3px solid var(--bg-card-alt);
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--navy-300);
+}
+.edu-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.6rem 2rem;
+  transition: all 0.25s;
+}
+.edu-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--navy-200);
+}
+.edu-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-wrap: wrap; gap: 0.5rem;
+  margin-bottom: 0.8rem;
+}
+.edu-school {
+  font-family: var(--font-serif);
+  font-size: 1.2rem; font-weight: 700;
+  color: var(--text-primary);
+}
+.edu-school .tag {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.65rem; font-weight: 600;
+  padding: 0.15rem 0.5rem;
+  background: var(--navy-50);
+  color: var(--navy-600);
+  border-radius: 100px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  letter-spacing: 0.04em;
+}
+.edu-meta {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.edu-major {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.6rem;
+}
+.edu-details {
+  display: flex; flex-wrap: wrap; gap: 0.4rem;
+  margin-top: 0.8rem;
+}
+.edu-tag {
+  font-size: 0.72rem;
+  padding: 0.25rem 0.65rem;
+  background: var(--bg-card-alt);
+  border-radius: 100px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* ========== SKILLS ========== */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+.skill-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 2rem;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.skill-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--navy-600), var(--accent-gold));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s;
+}
+.skill-card:hover::before { transform: scaleX(1); }
+.skill-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--navy-200);
+  transform: translateY(-2px);
+}
+.skill-icon {
+  width: 44px; height: 44px;
+  background: var(--navy-50);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+.skill-name {
+  font-family: var(--font-serif);
+  font-size: 1.05rem; font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.6rem;
+}
+.skill-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.skill-tools {
+  display: flex; flex-wrap: wrap; gap: 0.35rem;
+  margin-top: 1rem;
+}
+.skill-tool {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  padding: 0.2rem 0.55rem;
+  background: var(--navy-50);
+  color: var(--navy-600);
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* ========== EXPERIENCE ========== */
+.exp-section { background: var(--bg-card-alt); }
+.exp-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 2rem 2.5rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.25s;
+}
+.exp-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--navy-200);
+}
+.exp-card:last-child { margin-bottom: 0; }
+.exp-top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-wrap: wrap; gap: 0.5rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.exp-company {
+  font-family: var(--font-serif);
+  font-size: 1.15rem; font-weight: 700;
+  color: var(--text-primary);
+}
+.exp-role {
+  font-size: 0.88rem;
+  color: var(--navy-600);
+  font-weight: 600;
+  margin-top: 0.2rem;
+}
+.exp-period {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  background: var(--bg-card-alt);
+  border-radius: 100px;
+}
+.exp-body h4 {
+  font-size: 0.82rem; font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+  margin-top: 1rem;
+}
+.exp-body h4:first-child { margin-top: 0; }
+.exp-body ul {
+  list-style: none;
+  padding: 0;
+}
+.exp-body li {
+  position: relative;
+  padding-left: 1.2rem;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  margin-bottom: 0.3rem;
+}
+.exp-body li::before {
+  content: '';
+  position: absolute; left: 0; top: 0.65em;
+  width: 5px; height: 5px;
+  background: var(--navy-400);
+  border-radius: 50%;
+}
+.exp-highlight {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  font-weight: 600;
+  color: var(--navy-700);
+}
+.exp-metrics {
+  display: flex; gap: 1rem; flex-wrap: wrap;
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-subtle);
+}
+.exp-metric {
+  display: flex; flex-direction: column;
+  padding: 0.8rem 1.2rem;
+  background: var(--navy-50);
+  border-radius: var(--radius-sm);
+  min-width: 120px;
+}
+.exp-metric-val {
+  font-family: var(--font-mono);
+  font-size: 1.3rem; font-weight: 500;
+  color: var(--navy-700);
+  line-height: 1;
+}
+.exp-metric-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+}
+
+/* ========== PROJECTS ========== */
+.projects-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+.project-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  transition: all 0.3s;
+}
+.project-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--navy-200);
+  transform: translateY(-2px);
+}
+.project-visual {
+  background: linear-gradient(135deg, var(--navy-800), var(--navy-600));
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+.project-visual::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.project-visual-icon {
+  font-size: 3rem;
+  position: relative; z-index: 2;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+}
+.project-visual-img {
+  position: relative; z-index: 2;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+/* Featured project with image gallery */
+.project-card-featured {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: all 0.3s;
+}
+.project-card-featured:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--navy-200);
+  transform: translateY(-2px);
+}
+.project-featured-header {
+  background: linear-gradient(135deg, var(--navy-800), var(--navy-600));
+  padding: 2rem 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.project-featured-header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+.project-featured-meta {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 0.6rem;
+}
+.project-featured-tag {
+  font-family: var(--font-mono);
+  font-size: 0.68rem; font-weight: 500;
+  color: var(--accent-gold-light);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.project-featured-name {
+  font-family: var(--font-serif);
+  font-size: 1.4rem; font-weight: 700;
+  color: var(--text-on-dark);
+  position: relative; z-index: 2;
+}
+.project-featured-desc {
+  font-size: 0.88rem;
+  color: var(--text-on-dark-muted);
+  line-height: 1.7;
+  max-width: 720px;
+  margin-top: 0.6rem;
+  position: relative; z-index: 2;
+}
+.project-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+}
+.project-gallery-item {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  border-right: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.project-gallery-item:last-child { border-right: none; }
+.project-gallery-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s;
+}
+.project-gallery-item:hover img {
+  transform: scale(1.05);
+}
+.project-gallery-caption {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 0.6rem 0.8rem;
+  background: linear-gradient(transparent, rgba(10,22,40,0.85));
+  font-size: 0.7rem;
+  color: var(--text-on-dark);
+  font-weight: 500;
+}
+.project-featured-footer {
+  padding: 1.2rem 2.5rem;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+}
+.project-results { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.project-content {
+  padding: 2rem 2.5rem;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.project-tag {
+  display: inline-flex; align-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.68rem; font-weight: 500;
+  color: var(--accent-gold-dim);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+.project-name {
+  font-family: var(--font-serif);
+  font-size: 1.15rem; font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+.project-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+.project-results {
+  display: flex; flex-wrap: wrap; gap: 0.5rem;
+}
+.project-result {
+  font-size: 0.72rem; font-weight: 600;
+  padding: 0.3rem 0.7rem;
+  background: rgba(200,164,92,0.1);
+  color: var(--accent-gold-dim);
+  border-radius: 100px;
+  border: 1px solid rgba(200,164,92,0.2);
+}
+
+/* ========== AWARDS ========== */
+.awards-section { background: var(--bg-card-alt); }
+.awards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+.award-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.4rem 1.6rem;
+  display: flex; align-items: center; gap: 1rem;
+  transition: all 0.25s;
+}
+.award-card:hover {
+  box-shadow: var(--shadow-sm);
+  border-color: var(--navy-200);
+}
+.award-icon {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, var(--accent-gold), var(--accent-gold-light));
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+.award-text {
+  flex: 1;
+}
+.award-name {
+  font-size: 0.88rem; font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+.award-detail {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
+}
+
+/* ========== LEADERSHIP ========== */
+.leadership-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+.leadership-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 1.8rem;
+  text-align: center;
+  transition: all 0.3s;
+}
+.leadership-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--navy-200);
+  transform: translateY(-3px);
+}
+.leadership-icon {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+.leadership-title {
+  font-family: var(--font-serif);
+  font-size: 0.95rem; font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.4rem;
+}
+.leadership-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* ========== CONTACT ========== */
+.contact-section {
+  background: linear-gradient(160deg, var(--navy-950), var(--navy-800));
+  color: var(--text-on-dark);
+}
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+}
+.contact-text h3 {
+  font-family: var(--font-serif);
+  font-size: 1.8rem; font-weight: 700;
+  margin-bottom: 1rem;
+}
+.contact-text p {
+  color: var(--text-on-dark-muted);
+  font-size: 0.95rem;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+}
+.contact-items {
+  display: flex; flex-direction: column; gap: 1rem;
+}
+.contact-item {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1rem 1.2rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-sm);
+  transition: all 0.25s;
+}
+.contact-item:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.15);
+}
+.contact-item-icon {
+  width: 36px; height: 36px;
+  background: rgba(200,164,92,0.15);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.contact-item-label {
+  font-size: 0.7rem;
+  color: var(--text-on-dark-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.contact-item-value {
+  font-size: 0.9rem; font-weight: 500;
+  color: var(--text-on-dark);
+  margin-top: 0.1rem;
+}
+.contact-cta {
+  text-align: center;
+}
+.contact-cta-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: var(--radius-lg);
+  padding: 3rem 2rem;
+}
+.contact-cta-card h4 {
+  font-family: var(--font-serif);
+  font-size: 1.3rem; font-weight: 700;
+  margin-bottom: 0.8rem;
+}
+.contact-cta-card p {
+  color: var(--text-on-dark-muted);
+  font-size: 0.88rem;
+  margin-bottom: 1.5rem;
+}
+
+/* ========== FOOTER ========== */
+.footer {
+  background: var(--navy-950);
+  border-top: 1px solid rgba(255,255,255,0.05);
+  padding: 2rem;
+  text-align: center;
+}
+.footer p {
+  font-size: 0.75rem;
+  color: var(--text-on-dark-muted);
+  letter-spacing: 0.04em;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 900px) {
+  .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .about-left { align-items: center; text-align: center; }
+  .about-avatar-wrap { margin: 0 auto; }
+  .skills-grid { grid-template-columns: 1fr; }
+  .project-card { grid-template-columns: 1fr; }
+  .project-visual { min-height: 120px; }
+  .project-gallery { grid-template-columns: 1fr; }
+  .project-gallery-item { border-right: none; }
+  .awards-grid { grid-template-columns: 1fr; }
+  .leadership-cards { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+  .hero-stats { gap: 1.5rem; }
+  .nav-links { display: none; }
+}
+@media (max-width: 600px) {
+  .section { padding: 3.5rem 1.2rem; }
+  .hero { min-height: 90vh; }
+  .hero-content { padding: 0 1.2rem; }
+  .exp-card { padding: 1.4rem 1.2rem; }
+  .exp-metrics { flex-direction: column; }
+}
+
+/* ========== ANIMATIONS ========== */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">王<span>一新</span></div>
+    <div class="nav-links">
+      <a href="#about">关于</a>
+      <a href="#education">教育</a>
+      <a href="#skills">技能</a>
+      <a href="#experience">经历</a>
+      <a href="#projects">项目</a>
+      <a href="#awards">成果</a>
+      <a href="#contact">联系</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">供应链优化 · 运筹决策</div>
+    <h1>用数据驱动<br><span class="highlight">供应链效率提升</span></h1>
+    <p class="hero-subtitle">
+      中南大学交通运输硕士，研究方向为运输调度优化与供应链网络规划。
+      具备运筹建模、数据分析与项目全生命周期管理能力，
+      致力于通过科学方法优化供应链运营效率。
+    </p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-value">25%</div>
+        <div class="hero-stat-label">调度效率提升</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">10%</div>
+        <div class="hero-stat-label">物流成本降低</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">3</div>
+        <div class="hero-stat-label">国家发明专利</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">Top 1.1%</div>
+        <div class="hero-stat-label">数模竞赛排名</div>
+      </div>
+    </div>
+    <div class="hero-actions">
+      <a href="#contact" class="btn btn-primary">联系我</a>
+      <a href="#projects" class="btn btn-outline">查看项目</a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="section" id="about">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-label">About</div>
+      <div class="section-title">关于我</div>
+    </div>
+    <div class="about-grid">
+      <div class="about-left reveal reveal-delay-1">
+        <div class="about-avatar-wrap">
+          <div class="about-avatar-accent"></div>
+          <img src="images/avatar.png" alt="王一新" class="about-avatar">
+          <div class="about-avatar-accent-br"></div>
+        </div>
+        <div class="about-text">
+          <p>我是一名专注于供应链优化与运筹决策的研究生，本硕均就读于交通运输领域双一流专业。本科在大连海事大学打下了扎实的物流与供应链管理基础，目前在中南大学深入研究运输调度优化与供应链网络规划。</p>
+          <p>在湖南盾一科技的实习中，我参与了多车队协同运输调度系统的设计与开发，从需求分析到算法开发、从标书撰写到系统验收，全程深度参与项目全生命周期。通过运筹优化方法构建调度模型，在多约束条件下实现了多车协同路径优化与资源合理分配。</p>
+          <p>我相信数据驱动的决策方式能够为供应链管理带来真正的效率提升。无论是运输路径优化、设施选址还是库存管理，我都致力于用科学方法找到最优解。</p>
+        </div>
+      </div>
+      <div class="info-cards reveal reveal-delay-2">
+        <div class="info-card">
+          <div class="info-card-icon">🎓</div>
+          <div class="info-card-content">
+            <div class="info-card-label">教育背景</div>
+            <div class="info-card-value">中南大学 · 交通运输 · 硕士</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-icon">🏢</div>
+          <div class="info-card-content">
+            <div class="info-card-label">实习经历</div>
+            <div class="info-card-value">湖南盾一科技 · 运输调度优化</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-icon">🔬</div>
+          <div class="info-card-content">
+            <div class="info-card-label">研究方向</div>
+            <div class="info-card-value">运输调度优化与供应链网络规划</div>
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-icon">📍</div>
+          <div class="info-card-content">
+            <div class="info-card-label">籍贯</div>
+            <div class="info-card-value">河南安阳</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section class="section edu-section" id="education">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-label">Education</div>
+      <div class="section-title">教育背景</div>
+    </div>
+    <div class="edu-timeline">
+      <div class="edu-item reveal reveal-delay-1">
+        <div class="edu-dot"><div class="edu-dot-inner"></div></div>
+        <div class="edu-card">
+          <div class="edu-header">
+            <div>
+              <div class="edu-school">中南大学 <span class="tag">985</span> <span class="tag">双一流</span></div>
+              <div class="edu-major">交通运输工程（双一流专业） · 硕士研究生</div>
+            </div>
+            <div class="edu-meta">2024.09 – 至今</div>
+          </div>
+          <div class="edu-details">
+            <span class="edu-tag">GPA 前 30%</span>
+            <span class="edu-tag">研究生学业一等奖学金</span>
+            <span class="edu-tag">研究生学业二等奖学金</span>
+            <span class="edu-tag">运输调度优化</span>
+            <span class="edu-tag">供应链网络规划</span>
+            <span class="edu-tag">智能优化算法</span>
+            <span class="edu-tag">运筹优化</span>
+            <span class="edu-tag">国际贸易与物流</span>
+          </div>
+        </div>
+      </div>
+      <div class="edu-item reveal reveal-delay-2">
+        <div class="edu-dot"><div class="edu-dot-inner"></div></div>
+        <div class="edu-card">
+          <div class="edu-header">
+            <div>
+              <div class="edu-school">大连海事大学 <span class="tag">211</span> <span class="tag">双一流</span></div>
+              <div class="edu-major">交通运输（双一流专业） · 本科</div>
+            </div>
+            <div class="edu-meta">2020.09 – 2024.06</div>
+          </div>
+          <div class="edu-details">
+            <span class="edu-tag">GPA 前 20%</span>
+            <span class="edu-tag">校级奖学金（多次）</span>
+            <span class="edu-tag">三好学生</span>
+            <span class="edu-tag">优秀毕业生</span>
+            <span class="edu-tag">优秀毕业论文</span>
+            <span class="edu-tag">供应链管理</span>
+            <span class="edu-tag">运筹学</span>
+            <span class="edu-tag">港口经营与管理</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section class="section" id="skills">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-label">Skills</div>
+      <div class="section-title">专业技能</div>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-card reveal reveal-delay-1">
+        <div class="skill-icon">🔗</div>
+        <div class="skill-name">供应链分析与优化</div>
+        <div class="skill-desc">
+          具备供应链网络规划、运输调度与库存管理优化能力，能够基于业务约束设计优化方案，提升履约效率并降低运营成本。熟悉车辆路径规划、设施选址等典型供应链问题建模思路。
+        </div>
+        <div class="skill-tools">
+          <span class="skill-tool">CPLEX</span>
+          <span class="skill-tool">Gurobi</span>
+          <span class="skill-tool">启发式算法</span>
+          <span class="skill-tool">精确算法</span>
+        </div>
+      </div>
+      <div class="skill-card reveal reveal-delay-2">
+        <div class="skill-icon">📊</div>
+        <div class="skill-name">数据分析与决策支持</div>
+        <div class="skill-desc">
+          熟练使用多种工具对复杂物流与供应链业务数据进行深度清洗、特征提取与多维度交叉分析。具备搭建 KPI 指标体系与数据看板的能力，支持业务决策优化。
+        </div>
+        <div class="skill-tools">
+          <span class="skill-tool">Python</span>
+          <span class="skill-tool">Pandas/NumPy</span>
+          <span class="skill-tool">SQL</span>
+          <span class="skill-tool">SPSS</span>
+          <span class="skill-tool">Excel</span>
+          <span class="skill-tool">C/C++</span>
+        </div>
+      </div>
+      <div class="skill-card reveal reveal-delay-3">
+        <div class="skill-icon">🏗️</div>
+        <div class="skill-name">仿真与流程优化</div>
+        <div class="skill-desc">
+          熟悉 AnyLogic 等仿真工具，可用于仓储与物流系统产能评估与流程优化，通过仿真验证方案可行性，降低实施风险。
+        </div>
+        <div class="skill-tools">
+          <span class="skill-tool">AnyLogic</span>
+          <span class="skill-tool">流程仿真</span>
+          <span class="skill-tool">产能评估</span>
+        </div>
+      </div>
+      <div class="skill-card reveal reveal-delay-4">
+        <div class="skill-icon">📋</div>
+        <div class="skill-name">项目管理</div>
+        <div class="skill-desc">
+          具备大型项目全生命周期管理经验，能够进行需求拆解、方案设计与跨团队协同，推动分析结果落地。连续6年学生管理经验锻炼了出色的组织协调能力。
+        </div>
+        <div class="skill-tools">
+          <span class="skill-tool">需求分析</span>
+          <span class="skill-tool">方案设计</span>
+          <span class="skill-tool">跨团队协同</span>
+          <span class="skill-tool">标书撰写</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section class="section exp-section" id="experience">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-label">Experience</div>
+      <div class="section-title">实习经历</div>
+    </div>
+    <div class="exp-card reveal">
+      <div class="exp-top">
+        <div>
+          <div class="exp-company">湖南盾一科技有限公司</div>
+          <div class="exp-role">运输调度优化实习生</div>
+        </div>
+        <div class="exp-period">2025.01 – 2026.01</div>
+      </div>
+      <div class="exp-body">
+        <h4>核心工作</h4>
+        <ul>
+          <li>参与多车队协同运输调度系统设计，面向多任务并发与复杂环境场景，优化运输路径与调度策略</li>
+          <li>基于运筹优化方法构建调度模型，在多约束条件下实现多车协同路径优化与资源合理分配</li>
+          <li>设计动态调度与重规划机制，提升系统在突发情况下的响应能力与稳定性</li>
+          <li>参与系统联调与实地测试，根据业务反馈持续优化方案并推动落地</li>
+          <li>全程跟进项目，参与标书撰写、需求分析、算法开发、软件对接、系统验收全流程</li>
+        </ul>
+        <h4>核心成果</h4>
+        <ul>
+          <li>在测试场景中实现多车队协同调度的<span class="exp-highlight">秒级响应</span>，显著降低运输冲突与任务延误风险</li>
+          <li>各类冲突成功检测并消解，<span class="exp-highlight">优化整体调度效率 25%</span>，优化资源利用率</li>
+          <li>输出完整结题文档数十份支持项目验收，系统已完成实地测试</li>
+          <li>申请<span class="exp-highlight">国家发明专利 3 项</span></li>
+        </ul>
+      </div>
+      <div class="exp-metrics">
+        <div class="exp-metric">
+          <div class="exp-metric-val">25%</div>
+          <div class="exp-metric-label">调度效率提升</div>
+        </div>
+        <div class="exp-metric">
+          <div class="exp-metric-val">3 项</div>
+          <div class="exp-metric-label">国家发明专利</div>
+        </div>
+        <div class="exp-metric">
+          <div class="exp-metric-val">秒级</div>
+          <div class="exp-metric-label">协同调度响应</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="section" id="projects">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-label">Projects</div>
+      <div class="section-title">项目经历</div>
+    </div>
+    <div class="projects-grid">
+
+      <!-- Featured: Warehouse Picking Route Optimization -->
+      <div class="project-card-featured reveal">
+        <div class="project-featured-header">
+          <div class="project-featured-meta">
+            <span class="project-featured-tag">📦 仓储优化 · 独立开发</span>
+          </div>
+          <div class="project-featured-name">仓库拣货路径优化系统</div>
+          <div class="project-featured-desc">
+            基于单拣货员路径问题（SPRP）构建仓库拣货路径优化模型，将拣货问题抽象为 TSP 旅行商问题，
+            通过波次拣选（Wave Picking）与空间聚类策略，对电商型配送中心的拣货路径进行优化。
+            搭建 Streamlit 可视化平台，支持上传订单数据自动生成最优拣货路径，并对比不同策略下的步行距离差异。
+          </div>
+        </div>
+        <div class="project-gallery">
+          <div class="project-gallery-item">
+            <img src="images/warehouse_layout.png" alt="仓库布局模型" loading="lazy">
+            <div class="project-gallery-caption">仓库 2D 坐标布局</div>
+          </div>
+          <div class="project-gallery-item">
+            <img src="images/wave_picking.gif" alt="波次拣选路径" loading="lazy">
+            <div class="project-gallery-caption">波次拣选路径可视化</div>
+          </div>
+          <div class="project-gallery-item">
+            <img src="images/1000lines_distance35m_methods.png" alt="算法对比" loading="lazy">
+            <div class="project-gallery-caption">多策略距离对比分析</div>
+          </div>
+        </div>
+        <div class="project-featured-footer">
+          <div class="project-results">
+            <span class="project-result">Python · Streamlit</span>
+            <span class="project-result">TSP 路径优化</span>
+            <span class="project-result">波次拣选策略</span>
+            <span class="project-result">空间聚类分析</span>
+            <span class="project-result">步行距离降低 30%+</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal">
+        <div class="project-visual">
+          <div class="project-visual-icon">🚢</div>
+        </div>
+        <div class="project-content">
+          <div class="project-tag">网络规划 · 负责人</div>
+          <div class="project-name">内河航运网络优化与资源调度</div>
+          <div class="project-desc">
+            针对内河航运中干支协同效率低、运输成本高的问题，主导航运网络规划方案设计，优化枢纽选址、运输路径及资源配置。基于多源业务数据开展分析与建模，在多成本约束下构建优化模型，平衡成本与服务效率。
+          </div>
+          <div class="project-results">
+            <span class="project-result">成本降低约 10%</span>
+            <span class="project-result">运力充分利用</span>
+            <span class="project-result">SCI 论文在投</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-1">
+        <div class="project-visual">
+          <div class="project-visual-icon">✈️</div>
+        </div>
+        <div class="project-content">
+          <div class="project-tag">调度优化 · 项目成员</div>
+          <div class="project-name">航空资源调度与排班优化</div>
+          <div class="project-desc">
+            在多资源约束（时间窗、人员、设备等）条件下，协助构建调度优化模型，处理多任务并发与资源冲突问题。设计调度策略，在复杂约束条件下提升排班方案的可行性与稳定性。
+          </div>
+          <div class="project-results">
+            <span class="project-result">任务延误风险下降 25%</span>
+            <span class="project-result">效率提升 50%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="project-card reveal reveal-delay-2">
+        <div class="project-visual">
+          <div class="project-visual-icon">🏗️</div>
+        </div>
+        <div class="project-content">
+          <div class="project-tag">运营咨询 · 项目成员</div>
+          <div class="project-name">交通运输行业运营优化咨询</div>
+          <div class="project-desc">
+            参与 18 家港航企业实地调研，梳理运营流程与安全管理现状，开展深度的现场合规性审查，识别业务风险与管理痛点。基于调研数据与访谈结果，分析行业共性问题，提出优化建议与数字化改进方案。
+          </div>
+          <div class="project-results">
+            <span class="project-result">18 家企业调研</span>
+            <span class="project-result">咨询报告交付</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- AWARDS -->
+<section class="section awards-section" id="awards">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-label">Achievements</div>
+      <div class="section-title">竞赛与学术成果</div>
+    </div>
+    <div class="awards-grid">
+      <div class="award-card reveal">
+        <div class="award-icon">🏆</div>
+        <div class="award-text">
+          <div class="award-name">华为杯中国研究生数学建模竞赛 · 国家二等奖</div>
+          <div class="award-detail">Top 1.1% · 队长</div>
+        </div>
+      </div>
+      <div class="award-card reveal reveal-delay-1">
+        <div class="award-icon">🥈</div>
+        <div class="award-text">
+          <div class="award-name">华为杯中国研究生数学建模竞赛 · 国家三等奖</div>
+          <div class="award-detail">研究生数学建模</div>
+        </div>
+      </div>
+      <div class="award-card reveal reveal-delay-2">
+        <div class="award-icon">🥇</div>
+        <div class="award-text">
+          <div class="award-name">全国大学生商业精英挑战赛 · 国家一等奖</div>
+          <div class="award-detail">队长</div>
+        </div>
+      </div>
+      <div class="award-card reveal reveal-delay-3">
+        <div class="award-icon">📄</div>
+        <div class="award-text">
+          <div class="award-name">SCI 论文 1 篇（在投）</div>
+          <div class="award-detail">内河航运网络优化相关</div>
+        </div>
+      </div>
+      <div class="award-card reveal reveal-delay-4">
+        <div class="award-icon">💻</div>
+        <div class="award-text">
+          <div class="award-name">软件著作权 2 项</div>
+          <div class="award-detail">调度优化系统相关</div>
+        </div>
+      </div>
+      <div class="award-card reveal reveal-delay-4">
+        <div class="award-icon">📜</div>
+        <div class="award-text">
+          <div class="award-name">国家发明专利 3 项（申请中）</div>
+          <div class="award-detail">运输调度优化方向</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LEADERSHIP -->
+<section class="section" id="leadership">
+  <div class="section-inner">
+    <div class="section-header reveal">
+      <div class="section-label">Leadership</div>
+      <div class="section-title">学生工作与实践</div>
+    </div>
+    <div class="leadership-cards">
+      <div class="leadership-card reveal">
+        <div class="leadership-icon">👥</div>
+        <div class="leadership-title">班长 & 党支部副书记</div>
+        <div class="leadership-desc">连续 6 年学生管理经验，组织协调团队完成多项集体任务，责任心强且高抗压</div>
+      </div>
+      <div class="leadership-card reveal reveal-delay-1">
+        <div class="leadership-icon">📊</div>
+        <div class="leadership-title">政企项目汇报</div>
+        <div class="leadership-desc">杭州灵感传媒公司实习，参与政企客户项目汇报材料制作，梳理业务逻辑并输出结构化分析</div>
+      </div>
+      <div class="leadership-card reveal reveal-delay-2">
+        <div class="leadership-icon">🏛️</div>
+        <div class="leadership-title">政务实践</div>
+        <div class="leadership-desc">林州市政府基层调研与数据整理，协助推进民生项目执行，提升跨部门协同能力</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section contact-section" id="contact">
+  <div class="section-inner">
+    <div class="contact-grid">
+      <div class="contact-text reveal">
+        <h3>期待与您交流</h3>
+        <p>
+          如果您对我的背景感兴趣，或有供应链优化、运筹规划相关的岗位机会，
+          欢迎随时联系我。我期待能将所学应用于实际业务，为贵司的供应链效率提升贡献力量。
+        </p>
+        <div class="contact-items">
+          <div class="contact-item">
+            <div class="contact-item-icon">📱</div>
+            <div>
+              <div class="contact-item-label">电话</div>
+              <div class="contact-item-value">176-2586-6217</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">📧</div>
+            <div>
+              <div class="contact-item-label">邮箱</div>
+              <div class="contact-item-value">1975223784@qq.com</div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-item-icon">📍</div>
+            <div>
+              <div class="contact-item-label">所在地</div>
+              <div class="contact-item-value">湖南长沙（中南大学在读）</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="contact-cta reveal reveal-delay-1">
+        <div class="contact-cta-card">
+          <h4>下载完整简历</h4>
+          <p>获取详细的教育背景、项目经历与技能清单</p>
+          <a href="#" class="btn btn-primary" onclick="alert('请将简历PDF文件放置于同目录下'); return false;">下载 PDF 简历</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>© 2026 王一新 · 供应链优化 & 运筹决策</p>
+</footer>
+
+<script>
+// Reveal on scroll
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+reveals.forEach(el => observer.observe(el));
+
+// Smooth scroll for nav links
+document.querySelectorAll('.nav-links a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Nav background on scroll
+const nav = document.querySelector('.nav');
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 80) {
+    nav.style.background = 'rgba(10,22,40,0.97)';
+  } else {
+    nav.style.background = 'rgba(10,22,40,0.92)';
+  }
+});
+</script>
+
+</body>
+</html>
